@@ -1,0 +1,252 @@
+package com.uasd_Catalog;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
+public class CatalogoCarrerasUASD extends JFrame {
+
+    private JComboBox<String> comboFacultad;
+    private JTextField txtBuscar;
+    private JButton btnBuscar, btnTodas;
+    private final JTable tablaCarreras;
+    private final DefaultTableModel modeloTabla;
+
+    public CatalogoCarrerasUASD() {
+        setTitle("Catálogo Oficial de Carreras - UASD");
+        setSize(1300, 780);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
+
+        // ==================== PANEL SUPERIOR ====================
+        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 15));
+        panelSuperior.setBackground(new Color(0, 51, 102));
+
+        JLabel titulo = new JLabel("Catálogo de Carreras UASD");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titulo.setForeground(Color.WHITE);
+
+        comboFacultad = new JComboBox<>();
+        comboFacultad.setPreferredSize(new Dimension(280, 30));
+
+        txtBuscar = new JTextField(12);
+        txtBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+
+        btnBuscar = new JButton("Buscar");
+        btnTodas = new JButton("Todas las Carreras");
+        
+        styleButton(btnBuscar, new Color(0, 153, 76));
+        styleButton(btnTodas, new Color(0, 102, 204));
+        
+        panelSuperior.add(titulo);
+        panelSuperior.add(comboFacultad);
+        panelSuperior.add(txtBuscar);
+        panelSuperior.add(btnBuscar);
+        panelSuperior.add(btnTodas);
+
+        // ==================== TABLA ====================
+        String[] columnas = {"ID", "Facultad", "Escuela", "Código", "Nombre de la Carrera"};
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tablaCarreras = new JTable(modeloTabla);
+        tablaCarreras.setRowHeight(34);
+        tablaCarreras.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tablaCarreras.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tablaCarreras.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaCarreras.getTableHeader().setReorderingAllowed(false);
+        tablaCarreras.setAutoCreateRowSorter(true);
+        tablaCarreras.setGridColor(new Color(230, 230, 230));
+        tablaCarreras.setShowGrid(true);
+        tablaCarreras.setSelectionBackground(new Color(0, 102, 204));
+        tablaCarreras.setSelectionForeground(Color.WHITE);
+        tablaCarreras.getColumnModel().getColumn(0).setMaxWidth(80);
+        tablaCarreras.getColumnModel().getColumn(1).setMaxWidth(200);
+        tablaCarreras.getColumnModel().getColumn(2).setMaxWidth(400);
+        tablaCarreras.getColumnModel().getColumn(3).setMaxWidth(130);
+        tablaCarreras.getColumnModel().getColumn(4).setMaxWidth(600);
+
+        JScrollPane scroll = new JScrollPane(tablaCarreras);
+
+        add(panelSuperior, BorderLayout.NORTH);
+        add(scroll, BorderLayout.CENTER);
+
+        cargarFacultades();
+        cargarTodasLasCarreras();
+
+        // ==================== EVENTOS ====================
+        btnBuscar.addActionListener(e -> buscar());
+        txtBuscar.addActionListener(e -> buscar());
+        txtBuscar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { buscar(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { buscar(); }
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { buscar(); }
+        });
+
+        btnTodas.addActionListener(e -> {
+            txtBuscar.setText("");           
+            cargarTodasLasCarreras();
+        });
+
+        comboFacultad.addActionListener(e -> {
+            String facultadSeleccionada = (String) comboFacultad.getSelectedItem();
+            if (facultadSeleccionada != null && !facultadSeleccionada.equals("Todas las Facultades")) {
+                filtrarPorFacultad(facultadSeleccionada);
+            } else {
+                cargarTodasLasCarreras();
+            }
+        });
+    }
+
+    private void styleButton(JButton btn, Color color) {
+        btn.setBackground(color);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setFocusPainted(false);
+    }
+
+    // ==================== MÉTODOS ====================
+
+    private void cargarFacultades() {
+        CatalogoDB db = new CatalogoDB();
+        String URL = db.getURL();
+        String USUARIO = db.getUSUARIO();
+        String PASSWORD = db.getPASSWORD();
+
+        comboFacultad.addItem("Todas las Facultades");
+        String sql = db.getSqlTodasFacultades();
+        try (Connection conn = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                comboFacultad.addItem(rs.getString("nombre"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error cargando facultades: " + e.getMessage());
+        }
+    }
+
+    private void cargarTodasLasCarreras() {
+        CatalogoDB db = new CatalogoDB();
+        String URL = db.getURL();
+        String USUARIO = db.getUSUARIO();
+        String PASSWORD = db.getPASSWORD();
+
+        modeloTabla.setRowCount(0);
+        String sql = db.getSqlTodasCarreras();
+
+        try (Connection conn = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                modeloTabla.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("facultad"),
+                    rs.getString("escuela"),
+                    rs.getString("codigo_plan"),
+                    rs.getString("carrera")
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + e.getMessage());
+        }
+    }
+
+    private void filtrarPorFacultad(String facultad) {
+        CatalogoDB db = new CatalogoDB();
+        String URL = db.getURL();
+        String USUARIO = db.getUSUARIO();
+        String PASSWORD = db.getPASSWORD();
+
+        modeloTabla.setRowCount(0);
+        String sql = db.getSqlFiltrarFacultad();
+
+        try (Connection conn = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, facultad);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                modeloTabla.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("facultad"),
+                    rs.getString("escuela"),
+                    rs.getString("codigo_plan"),
+                    rs.getString("carrera")
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al filtrar por facultad: " + e.getMessage());
+        }
+    }
+
+    private void buscar() {
+        CatalogoDB db = new CatalogoDB();
+        String URL = db.getURL();
+        String USUARIO = db.getUSUARIO();
+        String PASSWORD = db.getPASSWORD();
+
+        String texto = txtBuscar.getText().trim();
+        if (texto.isEmpty()) {
+            cargarTodasLasCarreras();
+            return;
+        }
+
+        modeloTabla.setRowCount(0);
+        String sql = db.getSqlBuscarCarreras();
+
+        try (Connection conn = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            String like = "%" + texto + "%";
+            pstmt.setString(1, like);
+            pstmt.setString(2, like);
+            pstmt.setString(3, like);
+            pstmt.setString(4, like);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                modeloTabla.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("facultad"),
+                    rs.getString("escuela"),
+                    rs.getString("codigo_plan"),
+                    rs.getString("carrera")
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error en búsqueda: " + e.getMessage());
+        }
+    }    
+}
