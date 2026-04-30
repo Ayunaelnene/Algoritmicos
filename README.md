@@ -1,5 +1,7 @@
 # Algoritmicos
+
 Proyecto trabajo final Lab. Prog. 4
+
 # Catálogo Oficial de Carreras - UASD
 
 Sistema de consulta interactivo del catálogo de carreras de la Universidad Autónoma de Santo Domingo (UASD).
@@ -32,14 +34,23 @@ Aplicación de escritorio desarrollada en **Java** con interfaz gráfica Swing q
 ## Instalación y Ejecución
 
 Asegúrate de tener MySQL corriendo en el puerto 3306.
+
 Ejecuta el archivo init.sql en tu base de datos.
+
 Compila y ejecuta:
+
 mvn clean compile exec:java (en una linea)
+
 o
+
 mvn clean compile (en una linea, y luego ejecuta)
+
 mvn exec:java (para ejecutar)
 
+
+
 **Estructura del Proyecto**
+
 
 └───Proyecto
 
@@ -113,20 +124,32 @@ mvn exec:java (para ejecutar)
                             createdFiles.lst
                             
                             inputFiles.lst
+
                             
                             
 **Captura**
 
+
 <img width="1286" height="773" alt="image" src="https://github.com/user-attachments/assets/622d3ce6-38d8-4afe-a802-03e2edd436fc" />
 
+
+
 **Autores**
+
 Nelson Arjuna Mendoza 100643232
+
 Cristal Leidy del rosario - 100635951
+
 Edward Cedano o - 100630954
+
 Eduard d castro perez - 100597934
+
 Jomil Mota - 100617004
+
 Wondel Antonio Alonso - 100604431
 
+
 Estudiantes de Lic. en Informática - UASD
+
 
 
