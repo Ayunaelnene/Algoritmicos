@@ -149,7 +149,7 @@ Jomil Mota - 100617004
 Wondel Antonio Alonso - 100604431
 
 
-Estudiantes de Lic. en Informática - UASD
+**Estudiantes de Lic. en Informática - UASD**
 
 
 
