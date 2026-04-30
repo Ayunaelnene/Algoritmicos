@@ -42,16 +42,25 @@ mvn exec:java (para ejecutar)
 **Estructura del Proyecto**
 
 └───Proyecto
+
     │   pom.xml
+    
     │
     ├───.github
+    
     │   └───java-upgrade
+    
     │       │   .gitignore
+    
     │       │
     │       └───hooks
+    
     │           └───scripts
+    
     │                   recordToolUse.ps1
+    
     │                   recordToolUse.sh
+    
     │
     ├───.vscode
     │       settings.json
@@ -67,25 +76,44 @@ mvn exec:java (para ejecutar)
     │   │                   Main.java
     │   │
     │   └───test
+    
     │       └───java
+    
     └───target
+    
         ├───classes
+        
         │   └───com
+        
         │       └───uasd_Catalog
+        
         │               CatalogoCarrerasUASD$1.class
+        
         │               CatalogoCarrerasUASD$2.class
+        
         │               CatalogoCarrerasUASD.class
+        
         │               CatalogoDB.class
+        
         │               Main.class
+        
         │
         ├───generated-sources
+        
         │   └───annotations
+        
         └───maven-status
+        
             └───maven-compiler-plugin
+            
                 └───compile
+                
                     └───default-compile
+                    
                             createdFiles.lst
+                            
                             inputFiles.lst
+                            
                             
 **Captura**
 
