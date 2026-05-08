@@ -86,7 +86,7 @@ public class CatalogoCarrerasUASD extends JFrame {
         tablaCarreras.setSelectionBackground(new Color(0, 102, 204));
         tablaCarreras.setSelectionForeground(Color.WHITE);
         tablaCarreras.getColumnModel().getColumn(0).setMaxWidth(80);
-        tablaCarreras.getColumnModel().getColumn(1).setMaxWidth(200);
+        tablaCarreras.getColumnModel().getColumn(1).setMaxWidth(400);
         tablaCarreras.getColumnModel().getColumn(2).setMaxWidth(400);
         tablaCarreras.getColumnModel().getColumn(3).setMaxWidth(130);
         tablaCarreras.getColumnModel().getColumn(4).setMaxWidth(600);
