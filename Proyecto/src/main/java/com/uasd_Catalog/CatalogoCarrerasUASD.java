@@ -112,7 +112,8 @@ public class CatalogoCarrerasUASD extends JFrame {
         });
 
         btnTodas.addActionListener(e -> {
-            txtBuscar.setText("");           
+            txtBuscar.setText(""); 
+            comboFacultad.setSelectedItem("Todas las Facultades");
             cargarTodasLasCarreras();
         });
 
